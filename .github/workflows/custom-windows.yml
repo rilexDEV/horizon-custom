@@ -54,6 +54,12 @@ jobs:
           Copy-Item target/release/horizon-client.exe dist/
           Copy-Item launcher/target/release/horizon-launcher.exe dist/
           Copy-Item CUSTOM-BUILD.md,Start-Custom.ps1 dist/
+          Copy-Item LICENSE,THIRD_PARTY_NOTICES.md dist/
+          New-Item -ItemType Directory -Force dist/licenses | Out-Null
+          Copy-Item third_party/wgpu-hal/LICENSE.MIT,third_party/wgpu-hal/LICENSE.APACHE dist/licenses/
+          Copy-Item third_party/naga/LICENSE.MIT,third_party/naga/LICENSE.APACHE dist/licenses/
+          Copy-Item crates/horizon-theme/fonts/OFL-PixelifySans.txt dist/licenses/
+          Copy-Item crates/horizon-theme/icons/pixel/LICENSE-pixelarticons.txt dist/licenses/
       - uses: actions/upload-artifact@v4
         with:
           name: horizon-custom-windows-x64
