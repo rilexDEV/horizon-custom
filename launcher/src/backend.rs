@@ -3736,12 +3736,10 @@ pub fn {f}("
     /// Downloaded release asset names match the upstream release workflow references.
     #[test]
     fn platform_assets_are_published() {
-        let repo = Path::new(env!("CARGO_MANIFEST_DIR")).join("..");
-        let read = |path: &str| fs::read_to_string(repo.join(path)).unwrap();
         // Reference files are outside workflows/: this custom build uploads
         // unsigned artifacts and must not activate upstream release publishing.
-        let game_yml = read(".github/workflow-fixtures/game.yml");
-        let launcher = read(".github/workflow-fixtures/launcher.yml");
+        let game_yml = include_str!("../../.github/workflow-fixtures/game.yml");
+        let launcher = include_str!("../../.github/workflow-fixtures/launcher.yml");
         for (os, arch, game, launcher_asset) in PLATFORMS {
             assert!(
                 game_yml.contains(&format!("asset: {game}")),
