@@ -2572,6 +2572,16 @@ impl Launcher {
                     cx.notify();
                 })),
         );
+        foot = foot.child(
+            shell::text(theme::night::CAPTION, shell::c(n.muted))
+                .px(px(8.))
+                .pt(px(6.))
+                .child(tr("Modified build by RILEXezz")),
+        );
+        foot = foot.child(link(
+            "rilex-tiktok", "TikTok: @rilexthe_1_andonly", "globe",
+            "https://www.tiktok.com/@rilexthe_1_andonly".to_string(),
+        ));
         // Custom title bars carry the mark and name already.
         let brand = (!titlebar::draws_brand(window)).then(|| {
             div()
@@ -2899,6 +2909,15 @@ impl Launcher {
                 .into_any_element(),
         };
         let mut jar_buttons = div().flex().gap(px(8.));
+        let download = button("download-minecraft-jar", "Download and prepare", Kind::Secondary, &t);
+        jar_buttons = jar_buttons.child(if self.preparing {
+            disabled(download)
+        } else {
+            download.on_click(cx.listener(|this, _: &ClickEvent, _, cx| {
+                this.prepare(backend::MinecraftFrom::Mojang);
+                cx.notify();
+            }))
+        });
         if self.settings.minecraft_jar.is_some() {
             jar_buttons =
                 jar_buttons.child(button("auto-jar", "Automatic", Kind::Ghost, &t).on_click(
@@ -3403,6 +3422,11 @@ impl Launcher {
                     .child(group("AI", "terminal"))
                     .child(self.no_ai_row(n + 6, cx))
                     .child(group("About", "info-box"))
+                    .child(index_row(
+                        n + 12, tr("Custom build"),
+                        Some(plain("Modified build by RILEXezz. TikTok: @rilexthe_1_andonly. Based on Horizon by Ludovic Marie and contributors, and Horizon Offline Launcher by gerdaroot. MIT notices retained. Unofficial; not affiliated with Mojang or Microsoft. Minecraft belongs to its respective owners.")),
+                        None, &t,
+                    ))
                     .child(index_row(n + 7, "Horizon", Some(plain(&horizon)), horizon_action, &t))
                     .child(index_row(
                         n + 8,

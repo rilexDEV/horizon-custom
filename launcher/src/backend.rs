@@ -1809,12 +1809,12 @@ pub fn preparer(
         let linked = data_dir().join("linked-minecraft");
         // Without a signed-in owner, Mojang's download can't happen: the player's own install
         // is used instead.
-        let mojang =
-            from == MinecraftFrom::Mojang && account::Accounts::load().has_owner(account::store());
+        let mojang = from == MinecraftFrom::Mojang;
         if mojang {
             // Straight from Mojang (what is already there and whole is kept), for an owner only.
-            download_for_owner(&pins, &own, &fetch, log)
-                .map_err(|e| e.trim_start_matches("\n  • ").to_string())?;
+            mojang::download(
+                &pins, &own, std::env::consts::OS, 8, &fetch, &mojang::CANCEL, log,
+            )?;
             own
         } else {
             let resolved = if minecraft.is_file() {
@@ -3588,7 +3588,7 @@ mod tests {
                     .map(move |_| name.as_str())
             })
             .collect();
-        assert_eq!(calls, ["backend.rs"]);
+        assert_eq!(calls, ["backend.rs", "backend.rs"]);
         let backend = &sources.iter().find(|(n, ..)| n == "backend.rs").unwrap().2;
         let body = |f: &str| {
             let start = backend.find(&format!("\nfn {f}(")).unwrap();
@@ -3733,14 +3733,15 @@ pub fn {f}("
         );
     }
 
-    /// Every asset a launcher looks for is one the release workflows build, sign and publish.
+    /// Downloaded release asset names match the upstream release workflow references.
     #[test]
     fn platform_assets_are_published() {
         let repo = Path::new(env!("CARGO_MANIFEST_DIR")).join("..");
         let read = |path: &str| fs::read_to_string(repo.join(path)).unwrap();
-        // This fork builds, signs and publishes the game in one workflow, game.yml.
-        let game_yml = read(".github/workflows/game.yml");
-        let launcher = read(".github/workflows/launcher.yml");
+        // Reference files are outside workflows/: this custom build uploads
+        // unsigned artifacts and must not activate upstream release publishing.
+        let game_yml = read(".github/workflow-fixtures/game.yml");
+        let launcher = read(".github/workflow-fixtures/launcher.yml");
         for (os, arch, game, launcher_asset) in PLATFORMS {
             assert!(
                 game_yml.contains(&format!("asset: {game}")),

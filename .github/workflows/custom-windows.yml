@@ -16,9 +16,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Check release workflow reference files
+        shell: pwsh
+        run: |
+          foreach ($file in @('.github/workflow-fixtures/game.yml', '.github/workflow-fixtures/launcher.yml')) {
+            if (-not (Test-Path -LiteralPath $file)) { throw "Missing release test reference: $file" }
+          }
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
+          cache-on-failure: true
           workspaces: |
             . -> target
             launcher -> target
