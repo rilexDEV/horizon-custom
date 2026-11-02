@@ -656,5 +656,7 @@
   "Found by itself in your launcher's folder. Or pick the {version}.jar file.": "Знайдено самостійно в теці вашого лаунчера. Або виберіть файл {version}.jar.",
   "Minecraft jar": "Jar Minecraft",
   "This build of the launcher has no Microsoft sign-in (HORIZON_MSA_CLIENT_ID).": "У цій збірці лаунчера немає входу Microsoft (HORIZON_MSA_CLIENT_ID).",
-  "Offline launcher {version}": "Офлайн-лаунчер {version}"
+  "Offline launcher {version}": "Офлайн-лаунчер {version}",
+  "Custom build": "Власна збірка",
+  "Modified build by RILEXezz": "Змінена збірка від RILEXezz"
 }

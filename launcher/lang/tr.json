@@ -656,5 +656,7 @@
   "Found by itself in your launcher's folder. Or pick the {version}.jar file.": "Launcher klasöründe kendiliğinden bulundu. Ya da {version}.jar dosyasını seç.",
   "Minecraft jar": "Minecraft jar'ı",
   "This build of the launcher has no Microsoft sign-in (HORIZON_MSA_CLIENT_ID).": "Launcher'ın bu sürümünde Microsoft girişi yok (HORIZON_MSA_CLIENT_ID).",
-  "Offline launcher {version}": "Çevrimdışı launcher {version}"
+  "Offline launcher {version}": "Çevrimdışı launcher {version}",
+  "Custom build": "Özel derleme",
+  "Modified build by RILEXezz": "RILEXezz tarafından değiştirilmiş sürüm"
 }
