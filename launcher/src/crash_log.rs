@@ -34,7 +34,7 @@ pub fn install() {
 
 fn report(panic: &str) -> String {
     format!(
-        "Horizon Offline Launcher {} crashed\n\
+        "HORIZON CUSTOM BY RILEXezz {} crashed\n\
          Time: {}\n\
          System: {} {}\n\n\
          {panic}\n\n\
@@ -58,11 +58,11 @@ fn tell(file: &std::path::Path) {
     }
     let wide = |s: &str| s.encode_utf16().chain([0]).collect::<Vec<u16>>();
     let text = wide(&format!(
-        "Horizon Offline Launcher crashed.\n\nThe report is in:\n{}\n\nPlease attach it to an issue on \
+        "HORIZON CUSTOM BY RILEXezz crashed.\n\nThe report is in:\n{}\n\nPlease attach it to an issue on \
          github.com/gerdaroot/Horizon-Offline-Launcher.",
         file.display()
     ));
-    let caption = wide("Horizon Offline Launcher");
+    let caption = wide("HORIZON CUSTOM BY RILEXezz");
     // MB_OK | MB_ICONERROR
     unsafe { MessageBoxW(0, text.as_ptr(), caption.as_ptr(), 0x10) };
 }

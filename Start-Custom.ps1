@@ -1,7 +1,7 @@
 # Run beside the custom launcher. It prevents launcher self-updates for this run.
 # Uses the bundled custom client with resources prepared in the launcher.
 $ErrorActionPreference = 'Stop'
-$launcher = Join-Path $PSScriptRoot 'horizon-launcher.exe'
+$launcher = Join-Path $PSScriptRoot 'HORIZON CUSTOM BY RILEXezz.exe'
 if (-not (Test-Path -LiteralPath $launcher)) {
     throw 'Build/download the custom executables first; see CUSTOM-BUILD.md.'
 }

@@ -52,7 +52,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
           Copy-Item target/release/horizon-client.exe dist/
-          Copy-Item launcher/target/release/horizon-launcher.exe dist/
+          Copy-Item launcher/target/release/horizon-launcher.exe "dist/HORIZON CUSTOM BY RILEXezz.exe"
           Copy-Item CUSTOM-BUILD.md,Start-Custom.ps1 dist/
           Copy-Item LICENSE,THIRD_PARTY_NOTICES.md dist/
           New-Item -ItemType Directory -Force dist/licenses | Out-Null

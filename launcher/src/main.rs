@@ -2846,12 +2846,13 @@ impl Launcher {
                 .into_any_element(),
         };
         let mut jar_buttons = div().flex().gap(px(8.));
-        if self.settings.minecraft_jar.is_some() {
+        {
             jar_buttons =
                 jar_buttons.child(button("auto-jar", "Automatic", Kind::Ghost, &t).on_click(
                     cx.listener(|this, _: &ClickEvent, _, cx| {
                         this.settings.minecraft_jar = None;
                         this.settings.save();
+                        this.prepare(backend::MinecraftFrom::Install);
                         cx.notify();
                     }),
                 ));
