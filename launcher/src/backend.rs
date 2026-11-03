@@ -1811,11 +1811,7 @@ pub fn preparer(
         // is used instead.
         let mojang = from == MinecraftFrom::Mojang;
         if mojang {
-            // Straight from Mojang (what is already there and whole is kept), for an owner only.
-            mojang::download(
-                &pins, &own, std::env::consts::OS, 8, &fetch, &mojang::CANCEL, log,
-            )?;
-            own
+            return Err("Choose your existing Minecraft installation or jar before preparing.".into());
         } else {
             let resolved = if minecraft.is_file() {
                 sources::from_jar(minecraft, &pins, &linked, &fetch, log)
@@ -1829,37 +1825,11 @@ pub fn preparer(
                     sources::Resolved::Folder(dir) => dir,
                     sources::Resolved::NotFound(checked) => {
                         let not_found = sources::not_found(&version, &checked, minecraft);
-                        download_for_owner(&pins, &own, &fetch, log).map_err(|e| not_found + &e)?;
-                        own
+                        return Err(not_found);
                     }
                 }
             }
         }
-    };
-    // A separate cache keeps repairs away from other launchers' asset stores.
-    // With no network, the existing install remains usable as before.
-    let cache = data_dir().join("offline-assets").join(&version);
-    let minecraft = if let Some(pins) = read_json(&dir.join("research-lock.json"))
-        .and_then(|lock| sources::Pins::read(&lock))
-    {
-        let fetch = |url: &str| -> Result<Vec<u8>, String> {
-            let mut body = Vec::new();
-            get(url)?
-                .into_reader()
-                .read_to_end(&mut body)
-                .map_err(|e| e.to_string())?;
-            Ok(body)
-        };
-        match mojang::repair_assets(&pins, &minecraft, &cache, &fetch, &mojang::CANCEL, log) {
-            Ok(()) => cache,
-            Err(e) if mojang::CANCEL.load(std::sync::atomic::Ordering::Relaxed) => return Err(e),
-            Err(e) => {
-                log(format!("Asset repair: {e}; using the existing install"));
-                minecraft
-            }
-        }
-    } else {
-        minecraft
     };
     let manifest = minecraft
         .join("versions")
@@ -2269,6 +2239,16 @@ pub fn client_command(tag: &str) -> Command {
 /// The game's program: on macOS the one inside the version's Horizon.app, so the Dock and Cmd+Tab
 /// show Horizon's name and icon (game_app.rs); the bare binary elsewhere, or if that fails.
 fn client_program(tag: &str) -> PathBuf {
+    if std::env::var_os("HORIZON_USE_BUNDLED_CLIENT").as_deref() == Some(std::ffi::OsStr::new("1")) {
+        if let Ok(exe) = std::env::current_exe() {
+            if let Some(folder) = exe.parent() {
+                let client = folder.join(CLIENT);
+                if client.is_file() {
+                    return client;
+                }
+            }
+        }
+    }
     let dir = version_dir(tag);
     #[cfg(target_os = "macos")]
     match crate::game_app::ensure(&dir) {
@@ -3588,7 +3568,7 @@ mod tests {
                     .map(move |_| name.as_str())
             })
             .collect();
-        assert_eq!(calls, ["backend.rs", "backend.rs"]);
+        assert_eq!(calls, ["backend.rs"]);
         let backend = &sources.iter().find(|(n, ..)| n == "backend.rs").unwrap().2;
         let body = |f: &str| {
             let start = backend.find(&format!("\nfn {f}(")).unwrap();

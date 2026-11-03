@@ -778,6 +778,14 @@ impl Game<'_> {
         cookies: Option<horizon_client::net::Cookies>,
         lan: bool,
     ) -> Result<()> {
+        // Remote play requires a profile chosen by the player or a signed-in account.
+        // The generated single-player name is not a multiplayer profile.
+        if local.is_none() && horizon_client::auth::current().is_none() {
+            let profile = self.options.player_name.as_deref().unwrap_or("");
+            if !horizon_client::offline_name::is_valid(profile) {
+                return Err("Choose a valid multiplayer profile name in the Horizon launcher, then start the game again.".into());
+            }
+        }
         self.reset_tutorial();
         self.perf.world_opening();
         // A server's own biomes come over the connection; the last local
