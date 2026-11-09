@@ -2586,7 +2586,7 @@ impl Launcher {
                 - theme::TOPBAR
                 - 40. * headings as f32
                 - 52. * rows as f32
-                - 110.;
+                - 170.;
             let mut side = div().relative().mb(px(8.)).child(partner::card(
                 "partner-side",
                 theme::SIDEBAR - 20.,
@@ -2642,6 +2642,23 @@ impl Launcher {
                     this.version_clicked();
                     cx.notify();
                 })),
+        );
+        foot = foot.child(
+            div()
+                .flex()
+                .flex_col()
+                .gap(px(2.))
+                .px(px(8.))
+                .pt(px(10.))
+                .child(shell::text(theme::night::CAPTION, shell::c(n.ink)).child("RILEX EDITION"))
+                .child(
+                    shell::text(theme::night::CAPTION, shell::c(n.muted))
+                        .child("Modified build by RILEXezz"),
+                )
+                .child(
+                    shell::text(theme::night::CAPTION, shell::c(n.muted))
+                        .child("TikTok: @rilexthe_1_andonly"),
+                ),
         );
         // Custom title bars carry the mark and name already.
         let brand = (!titlebar::draws_brand(window)).then(|| {
