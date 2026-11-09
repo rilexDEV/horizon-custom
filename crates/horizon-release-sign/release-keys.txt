@@ -1,0 +1,4 @@
+# The public keys Horizon Offline Launcher's releases are signed with (docs/security.md, "Signed updates"): one
+# base64 Ed25519 key per line. The launcher and horizon-server build these in and refuse a download no key here
+# signed. The private key exists only as the RELEASE_SIGNING_KEY secret of gerdaroot/Horizon-Offline-Launcher.
+uzGcg2Sc1fAl26IpR2jEnhbmRhXTaiTyO9eWc2cpK1E=

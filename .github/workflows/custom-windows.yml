@@ -1,0 +1,55 @@
+name: Custom Windows build (no publishing)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 180
+    env:
+      HORIZON_TELEMETRY_URL: "off"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            . -> target
+            launcher -> target
+      - name: Find the Windows shader compiler
+        shell: pwsh
+        run: |
+          $fxc = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Filter fxc.exe -Recurse |
+            Where-Object { $_.Directory.Name -eq 'x64' } |
+            Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $fxc) { throw 'Windows SDK fxc.exe is missing' }
+          "GPUI_FXC_PATH=$($fxc.FullName)" >> $env:GITHUB_ENV
+      - name: Test encrypted offline login and server rejection
+        run: cargo test --locked --release -p horizon-client --lib net::tests::lan_login_continues_after_authentication_failure
+      - name: Test the launcher
+        working-directory: launcher
+        run: cargo test --locked --release
+      - name: Build the client
+        run: cargo build --locked --release -p horizon-client --bin horizon-client
+      - name: Build the launcher
+        working-directory: launcher
+        run: cargo build --locked --release --bin horizon-launcher
+      - name: Collect the executables
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item target/release/horizon-client.exe dist/
+          Copy-Item launcher/target/release/horizon-launcher.exe dist/
+          Copy-Item CUSTOM-BUILD.md,Start-Custom.ps1 dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: horizon-custom-windows-x64
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
